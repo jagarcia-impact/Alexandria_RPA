@@ -66,11 +66,12 @@ def fill_login(username=None, password=None, office_key=None):
     if login_context is None:
         raise RuntimeError("Could not find AdvancedMD login form (input#loginName) in any frame.")
 
-    # 3. Fill the fields
+    # Fill the fields
     login_context.fill("#loginName", username)
     login_context.fill("#password", password)
     login_context.fill("#officeKey", office_key)
-
+    
+    # Submit info
     try:
         login_context.click("button[type='submit']")
     except Exception:

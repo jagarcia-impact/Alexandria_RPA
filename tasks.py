@@ -224,6 +224,61 @@ def run_end_of_day_totals(main_page):
 
     return target_path
 
+def run_transaction_detail(main_page):
+    """
+    Open Reports -> Financial Totals -> Transaction Detail,
+    trigger the report download, save the file, and close the popup.
+    """
+    main_page.wait_for_load_state("domcontentloaded")
+    main_page.bring_to_front()
+
+    # Assumes Reports menu is already open (click_reports_menu was just called)
+
+    # 1) Hover "Financial Totals" so its submenu appears
+    fin_totals = main_page.locator("a", has_text="Financial Totals").first
+    fin_totals.wait_for(state="visible", timeout=2500)
+    fin_totals.hover()
+    main_page.wait_for_timeout(500)
+
+    # 2) Click "Transaction Detail" (opens popup)
+    with main_page.expect_popup() as tx_popup_info:
+        tx_link = main_page.locator("a", has_text="Transaction Detail").first
+        tx_link.wait_for(state="visible", timeout=2500)
+        tx_link.click()
+
+    # 3) Work in the popup
+    tx_page = tx_popup_info.value
+    tx_page.wait_for_load_state("domcontentloaded")
+
+    download_dir = os.path.join(os.getcwd(), "output", "downloads")
+    os.makedirs(download_dir, exist_ok=True)
+
+    # Select the report option (id 2237, analogous to 2236 above)
+    tx_page.click("#\\32 237 .col-xs-12")
+
+    # 4) Click the "Run report" button, which should trigger the download
+    with tx_page.expect_download() as download_info:
+        tx_page.click(".run-report")
+
+    download = download_info.value
+    filename = download.suggested_filename
+    target_path = os.path.join(download_dir, filename)
+    download.save_as(target_path)
+    logging.info(f"Transaction Detail report downloaded to: {target_path}")
+
+    # 5) Close the popup AFTER download
+    try:
+        tx_page.click(".btn:nth-child(1)")  # Close / OK
+    except Exception:
+        logging.warning("Could not click close button on Transaction Detail popup.")
+
+    try:
+        tx_page.close()
+    except Exception:
+        pass
+
+    return target_path
+
 @task
 def alexandria_report_automation():
     open_login_page()
@@ -234,3 +289,6 @@ def alexandria_report_automation():
     click_reports_menu(main_page)
     eod_path = run_end_of_day_totals(main_page)
     logging.info(f"EOD totals report saved at {eod_path}")
+    click_reports_menu(main_page)
+    trx_path = run_transaction_detail(main_page)
+    logging.info(f"Transaction detail report saved at {trx_path}")

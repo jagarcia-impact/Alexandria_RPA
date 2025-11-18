@@ -91,7 +91,7 @@ def snooze_all_notifications():
 
     try:
         btn = page.get_by_role("button", name="Snooze all")
-        btn.wait_for(state="visible", timeout=5000)
+        btn.wait_for(state="visible", timeout=3000)
         btn.click()
         logging.info("Clicked 'Snooze all' on main page.")
         return
@@ -118,7 +118,7 @@ def get_main_app_page():
     current_page = browser.page()
     current_page.wait_for_load_state("domcontentloaded")
 
-    def page_has_reports(page_obj, timeout=5000):
+    def page_has_reports(page_obj, timeout=4000):
         try:
             contexts = [page_obj] + list(page_obj.frames)
             for ctx in contexts:
@@ -132,7 +132,7 @@ def get_main_app_page():
             pass
         return False
 
-    if page_has_reports(current_page, timeout=8000):
+    if page_has_reports(current_page, timeout=3000):
         logging.info(f"Using current page as main app page (URL: {current_page.url})")
         return current_page
 
@@ -146,7 +146,7 @@ def get_main_app_page():
             except Exception:
                 continue
 
-            if page_has_reports(p, timeout=3000):
+            if page_has_reports(p, timeout=2500):
                 p.bring_to_front()
                 logging.info(f"Using main app page with URL: {p.url}")
                 return p
@@ -164,7 +164,7 @@ def click_reports_menu(main_page):
     for ctx in contexts:
         try:
             locator = ctx.locator("a.dropdown-toggle", has_text="Reports").first
-            locator.wait_for(state="visible", timeout=5000)
+            locator.wait_for(state="visible", timeout=2500)
             locator.click()
             logging.info("Clicked 'Reports' menu.")
             return
@@ -183,27 +183,46 @@ def run_end_of_day_totals(main_page):
 
     # 2) Hover/click "Financial Totals" so its submenu appears
     fin_totals = main_page.locator("a", has_text="Financial Totals").first
-    fin_totals.wait_for(state="visible", timeout=5000)
+    fin_totals.wait_for(state="visible", timeout=2500)
     fin_totals.hover()
     # small pause so the third-level menu renders
     main_page.wait_for_timeout(500)
 
     with main_page.expect_popup() as eod_popup_info:
         eod_link = main_page.locator("a", has_text="End of Day Totals").first
-        eod_link.wait_for(state="visible", timeout=5000)
+        eod_link.wait_for(state="visible", timeout=2500)
         eod_link.click()
 
     # 4) Work in the popup
     eod_page = eod_popup_info.value
     eod_page.wait_for_load_state("domcontentloaded")
 
+    download_dir = os.path.join(os.getcwd(), "output", "downloads")
+    os.makedirs(download_dir, exist_ok=True)
+
     eod_page.click("#\\32 236 .col-xs-12")
-    eod_page.click(".fixed")
-    eod_page.click(".btn:nth-child(1)")
+    with eod_page.expect_download() as download_info:
+        eod_page.click(".fixed")
 
-    eod_page.close()
+    download = download_info.value
+    filename = download.suggested_filename
+    target_path = os.path.join(download_dir, filename)
+    download.save_as(target_path)
+    logging.info(f"End of Day Totals report downloaded to: {target_path}")
 
+    # 5) Close pop-up
+    try:
+        eod_page.click(".btn:nth-child(1)")  # Close /
 
+    except Exception:
+        logging.warning("Could not click close button on End of Day Totals popup.")
+
+    try:
+        eod_page.close()
+    except Exception:
+        pass
+
+    return target_path
 
 @task
 def alexandria_report_automation():
@@ -213,4 +232,5 @@ def alexandria_report_automation():
     snooze_all_notifications()
     main_page = get_main_app_page()
     click_reports_menu(main_page)
-    run_end_of_day_totals(main_page)
+    eod_path = run_end_of_day_totals(main_page)
+    logging.info(f"EOD totals report saved at {eod_path}")

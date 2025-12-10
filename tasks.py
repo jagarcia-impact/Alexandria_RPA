@@ -2,7 +2,6 @@ import os
 import logging
 import time
 from datetime import datetime
-from urllib.parse import urlparse, parse_qs
 from robocorp.tasks import task
 from robocorp import browser
 from dotenv import load_dotenv
@@ -204,9 +203,16 @@ def run_end_of_day_totals(main_page):
     with eod_page.expect_download() as download_info:
         eod_page.click(".fixed")
 
+    run_dt = datetime.now()
+    month_start = run_dt.replace(day=1)
     download = download_info.value
-    filename = download.suggested_filename
-    target_path = os.path.join(download_dir, filename)
+    original_filename = download.suggested_filename
+    _, ext = os.path.splitext(original_filename)
+    new_filename = (
+        f"endofdaytotals_{month_start.strftime('%Y%m%d')}_"
+        f"{run_dt.strftime('%Y%m%d')}{ext}"
+    )
+    target_path = os.path.join(download_dir, new_filename)
     download.save_as(target_path)
     logging.info(f"End of Day Totals report downloaded to: {target_path}")
 
@@ -261,8 +267,15 @@ def run_transaction_detail(main_page):
         tx_page.click(".run-report")
 
     download = download_info.value
-    filename = download.suggested_filename
-    target_path = os.path.join(download_dir, filename)
+    original_filename = download.suggested_filename
+    run_dt = datetime.now()
+    month_start = run_dt.replace(day=1)
+    _, ext = os.path.splitext(original_filename)
+    new_filename = (
+        f"transactiondetail_{month_start.strftime('%Y%m%d')}_"
+        f"{run_dt.strftime('%Y%m%d')}{ext}"
+    )
+    target_path = os.path.join(download_dir, new_filename)
     download.save_as(target_path)
     logging.info(f"Transaction Detail report downloaded to: {target_path}")
 

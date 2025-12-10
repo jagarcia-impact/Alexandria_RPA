@@ -1,0 +1,31 @@
+[0m14:33:15.142330 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f175fcfd610>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f1760856540>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f176013adb0>]}
+
+
+============================== 14:33:15.152310 | a2370039-62a3-40a7-b2bd-216fe4aea737 ==============================
+[0m14:33:15.152310 [info ] [MainThread]: Running with dbt=1.10.15
+[0m14:33:15.153459 [debug] [MainThread]: running dbt with arguments {'profiles_dir': '/home/jagar/.dbt', 'no_print': 'None', 'warn_error': 'None', 'partial_parse': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'printer_width': '80', 'write_json': 'True', 'fail_fast': 'False', 'debug': 'False', 'quiet': 'False', 'empty': 'None', 'use_experimental_parser': 'False', 'indirect_selection': 'eager', 'target_path': 'None', 'introspect': 'True', 'log_cache_events': 'False', 'log_path': 'logs', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True', 'use_colors': 'True', 'invocation_command': 'dbt init alexandria_cleaning', 'version_check': 'True'}
+[0m14:33:15.322184 [info ] [MainThread]: Creating dbt configuration folder at /home/jagar/.dbt
+[0m14:33:15.350086 [debug] [MainThread]: Starter project path: /mnt/c/Users/jagar/OneDrive/Documents/GaTech/Fall 2025/CSE6242/Project/Alexandria_RPA/.venv/lib/python3.12/site-packages/dbt/include/starter_project
+[0m14:33:15.601067 [info ] [MainThread]: 
+Your new dbt project "alexandria_cleaning" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m14:33:15.602127 [info ] [MainThread]: Setting up your profile.
+[0m14:33:30.723609 [info ] [MainThread]: Profile alexandria_cleaning written to /home/jagar/.dbt/profiles.yml using target's sample configuration. Once updated, you'll be able to start developing with dbt.
+[0m14:33:30.726685 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 16.359972, "process_in_blocks": "77152", "process_kernel_time": 0.69606, "process_mem_max_rss": "134584", "process_out_blocks": "8", "process_user_time": 1.150433}
+[0m14:33:30.727883 [debug] [MainThread]: Command `dbt init` succeeded at 14:33:30.727736 after 16.36 seconds
+[0m14:33:30.728899 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f1760746f30>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f17600ebb00>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f176021be30>]}
+[0m14:33:30.729864 [debug] [MainThread]: Flushing usage events
+[0m14:33:31.441115 [debug] [MainThread]: An error was encountered while trying to flush usage events
